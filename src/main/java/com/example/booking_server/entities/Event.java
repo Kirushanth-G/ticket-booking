@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,9 +33,10 @@ public class Event {
     @Column(name = "venue")
     private String venue;
 
+    @Column(name = "status", columnDefinition = "status_enum DEFAULT 'UPCOMING'")
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "VARCHAR(255) DEFAULT 'UPCOMING'")
-    private EventStatus status;
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private EventStatus status = EventStatus.UPCOMING;
 
     @OneToMany
     private List<TicketType> ticketTypes = new ArrayList<>();

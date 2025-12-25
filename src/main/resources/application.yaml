@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/ticketbooking
-    username: kirus
+    username: postgres
     password: 3103Kiru
     driver-class-name: org.postgresql.Driver
 
