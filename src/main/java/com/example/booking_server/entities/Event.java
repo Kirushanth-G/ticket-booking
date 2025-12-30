@@ -38,6 +38,6 @@ public class Event {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private EventStatus status = EventStatus.UPCOMING;
 
-    @OneToMany
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
     private List<TicketType> ticketTypes = new ArrayList<>();
 }

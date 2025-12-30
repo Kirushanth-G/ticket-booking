@@ -38,6 +38,6 @@ public class TicketType {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToMany
+    @OneToMany(mappedBy = "ticketType", fetch = FetchType.LAZY)
     private List<Booking> bookings = new ArrayList<>();
 }
