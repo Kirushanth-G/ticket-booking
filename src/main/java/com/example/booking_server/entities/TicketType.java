@@ -31,8 +31,8 @@ public class TicketType {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Version
-    private Integer version;
+//    @Version
+//    private Integer version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
