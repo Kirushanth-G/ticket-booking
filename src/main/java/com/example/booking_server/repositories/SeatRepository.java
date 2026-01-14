@@ -17,4 +17,9 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
            nativeQuery = true)
     List<Seat> findAvailableSeatsForUpdate(@Param("ticketTypeId") Long ticketTypeId,
                                            @Param("limit") int limit);
+
+    // 3. OPTIMISTIC LOCK METHOD
+    @Query(value = "SELECT * FROM seats WHERE ticket_type_id = :ticketTypeId AND status = 'AVAILABLE' LIMIT :limit", nativeQuery = true)
+    List<Seat> findAvailableSeatsOptimistic(@Param("ticketTypeId") Long ticketTypeId,
+                                           @Param("limit") int limit);
 }

@@ -27,4 +27,13 @@ public class BookingController {
         var uri = uriBuilder.path("/bookings/{id}").buildAndExpand(dto.getBookingId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
+
+    @PostMapping("/optimistic")
+    public ResponseEntity<?> bookTicketOptimistic(
+            @Valid @RequestBody BookingRequest request,
+            UriComponentsBuilder uriBuilder) {
+        BookingDto dto = bookingService.bookTicketOptimistic(request);
+        var uri = uriBuilder.path("/bookings/{id}").buildAndExpand(dto.getBookingId()).toUri();
+        return ResponseEntity.created(uri).body(dto);
+    }
 }

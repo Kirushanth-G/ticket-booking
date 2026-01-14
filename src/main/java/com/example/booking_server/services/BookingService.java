@@ -21,6 +21,7 @@ public class BookingService {
     private final SeatRepository seatRepository;
     private final BookingMapper bookingMapper;
     private final BookingRepository bookingRepository;
+
     @Transactional
     public BookingDto bookTicket(BookingRequest request){
         TicketType ticketType = ticketTypeRepository.findById(request.getTicketTypeId()).orElseThrow(() -> new IllegalArgumentException("Ticket type not found."));
@@ -46,8 +47,39 @@ public class BookingService {
             item.setSeat(seat);
             booking.getItems().add(item);
         }
-
         Booking savedBooking = bookingRepository.save(booking);
         return bookingMapper.toDto(savedBooking);
+    }
+
+    @Transactional
+    public BookingDto bookTicketOptimistic(BookingRequest request) {
+        TicketType ticketType = ticketTypeRepository.findById(request.getTicketTypeId()).orElseThrow(() -> new IllegalArgumentException("Ticket type not found."));
+        List<Seat> availableSeats = seatRepository.findAvailableSeatsOptimistic(request.getTicketTypeId(), request.getQuantity());
+
+        if (availableSeats.size() < request.getQuantity()) {
+            throw new IllegalArgumentException("Not enough available seats. Found: " + availableSeats.size());
+        }
+        BigDecimal totalPrice = ticketType.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
+
+        Booking booking = bookingMapper.toEntity(request);
+        booking.setEvent(ticketType.getEvent());
+        booking.setTotalAmount(totalPrice);
+
+        for (Seat seat : availableSeats) {
+            seat.setStatus(SeatStatus.BOOKED);
+            seat.setReservedBy(request.getUserId());
+
+            BookingItem item = new BookingItem();
+            item.setBooking(booking);
+            item.setSeat(seat);
+            booking.getItems().add(item);
+        }
+
+        try {
+            Booking savedBooking = bookingRepository.save(booking);
+            return bookingMapper.toDto(savedBooking);
+        } catch (Exception e) {
+            throw new IllegalStateException("Someone else grabbed the ticket. Please try again.");
+        }
     }
 }

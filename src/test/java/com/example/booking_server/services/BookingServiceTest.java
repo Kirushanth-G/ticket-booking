@@ -94,4 +94,62 @@ public class BookingServiceTest {
 //        Long bookedSeats = seatRepository.countByTicketType_TicketTypeIdAndStatus(ticketType.getTicketTypeId(), com.example.booking_server.entities.SeatStatus.BOOKED);
 //        Assertions.assertEquals(5L, bookedSeats);
     }
+
+    @Test
+    public void testOptimisticLocking() throws InterruptedException{
+        Event event = new Event();
+        event.setEventName("Concurrent Event Test");
+        event.setVenue("Test Venue");
+        event.setEventDate(LocalDateTime.now().plusDays(10));
+        event.setStatus(EventStatus.ON_SALE);
+        eventRepository.save(event);
+
+        TicketType ticketType = new TicketType();
+        ticketType.setEvent(event);
+        ticketType.setTypeName("General Admission");
+        ticketType.setPrice(java.math.BigDecimal.valueOf(50.00));
+        ticketTypeRepository.save(ticketType);
+
+        List<Seat> seats = new ArrayList<>();
+        for(int i = 1; i <= 5; i++){
+            Seat seat = new Seat();
+            seat.setSeatNo("A" + i);
+            seat.setTicketType(ticketType);
+            seat.setStatus(com.example.booking_server.entities.SeatStatus.AVAILABLE);
+            seats.add(seat);
+        }
+        seatRepository.saveAll(seats);
+
+        int numberOfThreads = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+
+        AtomicInteger successfulBookings = new AtomicInteger(0);
+        AtomicInteger failedBookings = new AtomicInteger(0);
+
+        for(int i = 0; i < numberOfThreads; i++){
+            final int userId = i + 1;
+            executorService.submit(() -> {
+                try{
+                    BookingRequest request = new BookingRequest();
+                    request.setUserId((long) userId);
+                    request.setTicketTypeId(ticketType.getTicketTypeId());
+                    request.setQuantity(1);
+
+                    bookingService.bookTicketOptimistic(request);
+                    successfulBookings.incrementAndGet();
+                } catch (Exception e){
+                    failedBookings.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        executorService.shutdown();
+        System.out.println("Successful bookings: " + successfulBookings.get());
+        System.out.println("Failed bookings: " + failedBookings.get());
+        Assertions.assertEquals(5, successfulBookings.get());
+        Assertions.assertEquals(5, failedBookings.get());
+    }
 }
