@@ -11,7 +11,7 @@ public class BookingRequest{
     @NotNull(message = "Ticket Type ID is required")
     private Long ticketTypeId;
 
-    @NotNull(message = "Number of seats booked is required")
-    @Min(value = 1, message = "Total seats must be at least 1")
-    private Integer seatsBooked;
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
+    private Integer quantity;
 }

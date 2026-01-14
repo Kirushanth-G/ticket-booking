@@ -20,7 +20,7 @@ public class TicketTypeController {
     private final TicketTypeService ticketTypeService;
 
     @PostMapping
-    public ResponseEntity<?> createTicketType(
+    public ResponseEntity<TicketDto> createTicketType(
             @Valid @RequestBody TicketTypeRequest request,
             UriComponentsBuilder uriBuilder) {
         TicketDto dto = ticketTypeService.createTicketType(request);

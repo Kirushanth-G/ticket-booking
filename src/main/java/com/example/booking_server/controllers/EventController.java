@@ -20,7 +20,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
-    public ResponseEntity<?> createEvent(
+    public ResponseEntity<EventDto> createEvent(
             @Valid @RequestBody EventRequest request,
             UriComponentsBuilder uriBuilder){
         EventDto dto = eventService.createEvent(request);
