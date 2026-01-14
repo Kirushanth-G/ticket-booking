@@ -24,10 +24,10 @@ public class Event {
     @Column(name = "event_id")
     private Long eventId;
 
-    @Column(name = "event_name")
+    @Column(name = "event_name", nullable = false)
     private String eventName;
 
-    @Column(name = "event_date")
+    @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
     @Column(name = "venue")
@@ -38,6 +38,9 @@ public class Event {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private EventStatus status = EventStatus.UPCOMING;
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketType> ticketTypes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<Booking> bookings = new ArrayList<>();
 }

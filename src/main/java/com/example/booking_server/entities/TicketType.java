@@ -22,22 +22,16 @@ public class TicketType {
     @Column(name = "ticket_type_id")
     private Long ticketTypeId;
 
-    @Column(name = "type_name")
+    @Column(name = "type_name", nullable = false, length = 100)
     private String typeName;
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
-
-    @Column(name = "quantity")
-    private Integer quantity;
-
-//    @Version
-//    private Integer version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToMany(mappedBy = "ticketType", fetch = FetchType.LAZY)
-    private List<Booking> bookings = new ArrayList<>();
+    @OneToMany(mappedBy = "ticketType", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Seat> seats = new ArrayList<>();
 }
