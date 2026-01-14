@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface TicketTypeMapper {
+    @Mapping(target = "event", ignore = true)
+    @Mapping(target = "seats", ignore = true)
     TicketType toEntity(TicketTypeRequest request);
 
     @Mapping(target = "eventId", source = "event.eventId")

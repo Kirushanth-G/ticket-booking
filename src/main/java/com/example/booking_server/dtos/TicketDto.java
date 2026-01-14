@@ -10,5 +10,4 @@ public class TicketDto {
     private Long eventId;
     private String typeName;
     private BigDecimal price;
-    private Integer quantity;
 }

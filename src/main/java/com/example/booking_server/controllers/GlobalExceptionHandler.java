@@ -1,5 +1,8 @@
 package com.example.booking_server.controllers;
 
+import com.example.booking_server.exceptions.EventAlreadyExistsException;
+import com.example.booking_server.exceptions.EventNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +27,30 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("error", "Malformed JSON request");
         error.put("message", "Invalid input format. Please check your data types (e.g., date formats).");
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(EventAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleEventAlreadyExists(EventAlreadyExistsException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Event Already Exists");
+        error.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleGenericException(EventNotFoundException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Event Not Found");
+        error.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Invalid Request");
+        error.put("message", e.getMessage());
         return ResponseEntity.badRequest().body(error);
     }
 }
