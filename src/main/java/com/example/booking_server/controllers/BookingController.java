@@ -36,4 +36,13 @@ public class BookingController {
         var uri = uriBuilder.path("/bookings/{id}").buildAndExpand(dto.getBookingId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
+
+    @PostMapping("/distributed-lock")
+    public ResponseEntity<?> bookTicketDistributed(
+            @Valid @RequestBody BookingRequest request,
+            UriComponentsBuilder uriBuilder) {
+        BookingDto dto = bookingService.bookTicketWithRedisLock(request);
+        var uri = uriBuilder.path("/bookings/{id}").buildAndExpand(dto.getBookingId()).toUri();
+        return ResponseEntity.created(uri).body(dto);
+    }
 }

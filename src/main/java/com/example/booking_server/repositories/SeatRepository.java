@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
     // 1. Standard find (No lock)
-    List<Seat> findByTicketTypeTicketTypeIdAndSeatNo(Long ticketTypeId, String seatNo);
+    @Query(value = "SELECT * FROM seats WHERE ticket_type_id = :ticketTypeId AND status = 'AVAILABLE' LIMIT :limit", nativeQuery = true)
+    List<Seat> findAvailableSeats(@Param("ticketTypeId") Long ticketTypeId, @Param("limit") int limit);
 
     // 2. 🔒 PESSIMISTIC LOCK METHOD
     // "FOR UPDATE SKIP LOCKED" is already in the SQL query
